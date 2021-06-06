@@ -55,6 +55,16 @@ public class RSA {
         this.n = n;
     }
 
+    /**
+     * Encrypts a message through <b>C = M^e mod n</b> where: <ul> <li>C =
+     * encrypted message <li>M = message to be encrypted <li>e = relative prime
+     * to phi <li>n = modulo obtained from p*q </ui>
+     *
+     * @param message to be encrypted
+     * @return encrypted message represented by a Java BigInteger
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public BigInteger encrypt(BigInteger bigInteger) {
         if (isModulusSmallerThanMessage(bigInteger)) {
             throw new IllegalArgumentException("Could not encrypt - message bytes are greater than modulus");
@@ -62,6 +72,17 @@ public class RSA {
         return Utils.powerMod(bigInteger, e, n);
     }
 
+    /**
+     * Encrypts a message using the encrypt method checking if message blocks
+     * are valid
+     *
+     * @see RSAImpl#getValidEncryptionBlocks(java.util.List)
+     * @see RSAImpl#encrypt(java.math.BigInteger)
+     * @param message string
+     * @return a list of encrypted message blocks where each encrypted block is represented by a Java BigInteger
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public List<BigInteger> encryptMessage(final String message) {
         List<BigInteger> toEncrypt = new ArrayList<BigInteger>();
         BigInteger messageBytes = new BigInteger(message.getBytes());
@@ -81,6 +102,14 @@ public class RSA {
         return encrypted;
     }
 
+    /**
+     * encript each line of a file using the encript method
+     *
+     * @param filePath path to a file containing the message to be encripted
+     * @return a BigInteger representing each encrypted file line
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public List<BigInteger> encryptFile(String filePath) {
         BufferedReader br = null;
         FileInputStream fis = null;
@@ -98,6 +127,7 @@ public class RSA {
                 encription.addAll(this.encryptMessage(temp + line));
                 temp = "\n";
             }
+            encription.addAll(this.encryptMessage(temp));
 
         } catch (IOException ex) {
             Logger.getLogger(RSA.class.getName()).log(Level.SEVERE, null, ex);
@@ -118,10 +148,32 @@ public class RSA {
 
     }
 
+    /**
+     * decrypt an encrypted message through <b>M = C^d mod n</b> where: <ul>
+     * <li>M = decrypted message <li>C = encrypted message <li>d = private key -
+     * obtained from multiplicative inverse of 'e' mod 'phi' <li>n = modulo -
+     * obtained from p*q </ul>
+     *
+     * @param encrypted encrypted message
+     * @return decrypted message represented by a Java BigInteger type
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public BigInteger decrypt(BigInteger encrypted) {
         return Utils.powerMod(encrypted, d, n);
     }
 
+    /**
+     * decrypt a list of encrypted messages through <b>M = C^d mod n</b> where:
+     * <ul> <li>M = decrypted message <li>C = encrypted message <li>d = private
+     * key - obtained from multiplicative inverse of 'e' mod 'phi' <li>n =
+     * modulo - obtained from p*q </ul>
+     *
+     * @param encryption encrypted messages represented by a list of Java BigInteger
+     * @return list of decrypted message
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public List<BigInteger> decrypt(List<BigInteger> encryption) {
         List<BigInteger> decryption = new ArrayList<BigInteger>();
         for (BigInteger bigInteger : encryption) {
@@ -130,10 +182,32 @@ public class RSA {
         return decryption;
     }
 
+    /**
+     * digitally signs a message through <b>A = M^d mod n</b> where: <ul> <li>A
+     * = signed message <li>M = message to be digitally signed <li>d = private
+     * key - obtained from multiplicative inverse of 'e' mod 'phi' <li>n =
+     * modulo - obtained from p*q </ul>
+     *
+     * @param message to be digitally signed
+     * @return signed message represented by a Java BigInteger
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public BigInteger sign(BigInteger bigInteger) {
         return Utils.powerMod(bigInteger, d, n);
     }
 
+    /**
+     * Signs a message using the sign method checking if message blocks are
+     * valid
+     *
+     * @see RSAImpl#getValidEncryptionBlocks(java.util.List)
+     * @see RSAImpl#sign(java.math.BigInteger)
+     * @param message string
+     * @return a list of signed message blocks where each signed block is represented by a Java BigInteger
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public List<BigInteger> signMessage(final String message) {
         List<BigInteger> toSign = new ArrayList<BigInteger>();
         BigInteger messageBytes = new BigInteger(message.getBytes());
@@ -153,6 +227,14 @@ public class RSA {
         return signed;
     }
 
+    /**
+     * Signs each line of a file using the sign method
+     * @see RSA#signMessage(java.lang.String) 
+     * @param filePath
+     * @return a BigInteger representing each signed lines
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public List<BigInteger> signFile(String filePath) {
         BufferedReader br = null;
         FileInputStream fis = null;
@@ -170,6 +252,7 @@ public class RSA {
                 signedLines.addAll(this.signMessage(temp + line));
                 temp = "\n";
             }
+            signedLines.addAll(this.signMessage(temp));
 
         } catch (IOException ex) {
             Logger.getLogger(RSA.class.getName()).log(Level.SEVERE, null, ex);
@@ -189,10 +272,32 @@ public class RSA {
         return signedLines;
     }
 
+    /**
+     * verifies a signed message through <b>A^e mod n = M</b> where: <ul> <li>A
+     * = signed message <li>e = relative prime to phi <li>n = modulo - obtained
+     * from p*q <li>M = original message </ul>
+     *
+     * @param message to be verified
+     * @return decimal number result from verification , if its equal to the
+     * decimal representation of the original message then its successfully
+     * verified
+     * @see RSA#isVerified(java.math.BigInteger, java.math.BigInteger)
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public BigInteger Verify(BigInteger signedMessage) {
         return signedMessage.modPow(e, n);
     }
 
+    /**
+     * verifies a list of signed messages through verify method
+     *
+     * @param signedMessages
+     * @return list of verified messages
+     * @see RSA#Verify(java.math.BigInteger)
+     * 
+     * @author Rafael M. Pestano - Oct 21, 2012 7:15:19 PM
+     */
     public List<BigInteger> verify(List<BigInteger> signedMessages) {
         List<BigInteger> verification = new ArrayList<BigInteger>();
         for (BigInteger bigInteger : signedMessages) {
@@ -201,6 +306,17 @@ public class RSA {
         return verification;
     }
 
+    /**
+     * @param signedMessage
+     * @param original message
+     * @return <code>true</code> if decimal representation of the original
+     * message matched the decimal representation of the signed message
+     * <code>false</code> otherwise
+     *
+     * @see RSA#Verify(java.math.BigInteger)
+     * 
+     * @author Rafael M. Pestano - Oct 21, 2012 7:15:19 PM
+     */
     public boolean isVerified(BigInteger signedMessage, BigInteger message) {
         return this.Verify(signedMessage).equals(message);
     }
@@ -227,7 +343,12 @@ public class RSA {
 
     }
 
-    
+    /**
+     * @param message
+     * @return decimal representation of the message
+     * 
+     * @author Rafael M. Pestano - Oct 21, 2012 7:15:19 PM
+     */
     public List<BigInteger> messageToDecimal(final String message) {
         List<BigInteger> toDecimal = new ArrayList<BigInteger>();
         BigInteger messageBytes = new BigInteger(message.getBytes());
@@ -247,7 +368,12 @@ public class RSA {
         return decimal;
     }
 
-    
+    /**
+     * @param filePath
+     * @return decimal representation of a file
+     * 
+     * @author Rafael M. Pestano - Oct 21, 2012 7:15:19 PM
+     */
     public List<BigInteger> fileToDecimal(final String filePath) {
         BufferedReader br = null;
         FileInputStream fis = null;
@@ -297,6 +423,10 @@ public class RSA {
         return s;
     }
 
+    /**
+     * @param filePath
+     * @return decimal representation of a file
+     */
     public static List<BigInteger> readFromFile(String filePath)
         throws NumberFormatException
     {
@@ -337,6 +467,12 @@ public class RSA {
         return fileString;
     }
 
+    /**
+     * Write message to file
+     * 
+     * @param message
+     * @param filePath
+     */
     public static void writeBigIntegerToFile(List<BigInteger> message, String filePath)
     {
         BufferedWriter bw = null;
@@ -365,6 +501,7 @@ public class RSA {
             }
         }
     }
+
 
     public static void writeStringToFile(String message, String filePath)
     {

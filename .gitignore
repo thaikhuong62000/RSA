@@ -29,12 +29,13 @@ hs_err_pid*
 *.dec
 
 # Signed file
-*.signed
+*.sig
 
 # Verified file
-*.verified
+*.veri
 
 # Key file
 *.pri
 *.pub
+
 

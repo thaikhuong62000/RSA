@@ -7,6 +7,14 @@ import java.util.List;
 
 public class Main {
 
+    /**
+     * Generate public key and private key and write 
+     * to two file {fileName}.pub and {fileName}.pri
+     * 
+     * @param fileName
+     * @param keySize
+     * 
+     */
     public static void generateKey(String fileName, int keySize)
     {
         long start = System.currentTimeMillis();
@@ -32,20 +40,14 @@ public class Main {
         System.out.println("Elapsed Time: " + elapsedTime + "ms");
     }
 
-    public static List<BigInteger> enc_message(String message, BigInteger e, BigInteger n)
-    {
-        RSA RSA_enc = new RSA();
-        RSA_enc.initPublicKey(e, n);
-        List<BigInteger> encryption;
-        // List<BigInteger> decimalMessage;
-        encryption = RSA_enc.encryptMessage(message);
-        // decimalMessage = RSA_enc.messageToDecimal(message);
-        // System.out.println("message(plain text)   = " + Utils.bigIntegerToString(decimalMessage));
-        // System.out.println("message(decimal)      = " + Utils.bigIntegerSum(decimalMessage));
-        // System.out.println("encripted(decimal)    = " + Utils.bigIntegerSum(encryption));
-        return encryption;
-    }
-
+    /**
+     * Encrypt a file then write encrypted file to {filePath}.enc
+     * 
+     * @param filePath
+     * @param e - part of public key
+     * @param n - part of public key
+     * @return encrypted message
+     */
     public static List<BigInteger> enc_file(String filePath, BigInteger e, BigInteger n)
     {
         long start = System.currentTimeMillis();
@@ -62,6 +64,14 @@ public class Main {
         return encryption;
     }
 
+    /**
+     * Decrypt a file then write decrypted file to {filePath}.dec
+     * 
+     * @param filePath
+     * @param d - part of private key
+     * @param n - part of private key
+     * @return decrypted message
+     */
     public static String dec_file(String filePath, BigInteger d, BigInteger n)
     {
         long start = System.currentTimeMillis();
@@ -88,6 +98,14 @@ public class Main {
         return decrypted;
     }
 
+    /**
+     * Sign a file then write signed file to {filePath}.sig
+     * 
+     * @param filePath
+     * @param d - part of private key
+     * @param n - part of private key
+     * @return signed message
+     */
     public static List<BigInteger> sign_file(String filePath, BigInteger d, BigInteger n)
     {
         long start = System.currentTimeMillis();
@@ -96,7 +114,7 @@ public class Main {
         List<BigInteger> signed;
         signed = RSA_sign.signFile(filePath);
         // System.out.println("signed(decimal)    = " + Utils.bigIntegerSum(signed));
-        RSA.writeBigIntegerToFile(signed, filePath + ".signed");
+        RSA.writeBigIntegerToFile(signed, filePath + ".sig");
         long end = System.currentTimeMillis();
         long elapsedTime = end - start;
         System.out.println("Signed file complete!");
@@ -104,12 +122,20 @@ public class Main {
         return signed;
     }
 
+    /**
+     * Verify a file then write verified file to {filePath}.veri
+     * 
+     * @param filePath
+     * @param e - part of public key
+     * @param n - part of public key
+     * @return verified message
+     */
     public static String verify_file(String filePath, BigInteger e, BigInteger n)
     {
         long start = System.currentTimeMillis();
         String verifiedString = "";
         try {
-            List<BigInteger> signed = RSA.readFromFile(filePath + ".signed");
+            List<BigInteger> signed = RSA.readFromFile(filePath + ".sig");
             RSA RSA_enc = new RSA();
             RSA_enc.initPublicKey(e, n);
             List<BigInteger> verified;
@@ -117,7 +143,7 @@ public class Main {
             verifiedString = Utils.bigIntegerToString(verified);
             // System.out.println("verified(plain text) = " + decrypted);
             // System.out.println("verified(decimal)    = " + Utils.bigIntegerSum(verified));
-            RSA.writeStringToFile(verifiedString, filePath + ".verified");
+            RSA.writeStringToFile(verifiedString, filePath + ".veri");
         } catch (NumberFormatException ex) {
             System.out.println("Invalid file!");
         } finally {
@@ -181,7 +207,7 @@ public class Main {
     {
         // test();
         // generateKey("key", 500);
-        String filePath = "txt";
+        String filePath = "file.txt";
         List<BigInteger> publicKey = RSA.readFromFile("key.pub");
         List<BigInteger> privateKey = RSA.readFromFile("key.pri");
         sign_file(filePath, privateKey.get(0), privateKey.get(1));

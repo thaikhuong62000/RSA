@@ -39,6 +39,8 @@ public class Utils {
      *
      * @param messages
      * @return the list of splited strings
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
      */
     public static List<String> splitMessages(List<String> messages) {
         List<String> splitedMessages = new ArrayList<String>(messages.size() * 2);
@@ -53,6 +55,13 @@ public class Utils {
         return splitedMessages;
     }
 
+    /**
+     *
+     * @param list
+     * @return string representation of decrypted the message bytes
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
+     */
     public static String bigIntegerToString(List<BigInteger> list) {
         StringBuilder plainText = new StringBuilder();
         for (BigInteger bigInteger : list) {
@@ -65,6 +74,8 @@ public class Utils {
      *
      * @param list
      * @return decimal representation of encrypted/decrypted the message bytes
+     * 
+     * @author Rafael M. Pestano - Oct 15, 2012 7:15:19 PM
      */
     public static String bigIntegerSum(List<BigInteger> list) {
         BigInteger result = new BigInteger("0");
@@ -74,6 +85,13 @@ public class Utils {
         return result.toString();
     }
 
+    /**
+     *
+     * @param x
+     * @param y
+     * 
+     * @return x power y
+     */
     public static BigInteger power(BigInteger x, BigInteger y)
     {
         BigInteger result = BigInteger.ONE;
@@ -81,12 +99,12 @@ public class Utils {
         {
             if (y.and(BigInteger.ONE).compareTo(BigInteger.ZERO) == 0)
             {
-                x = x.multiply(x);
+                x = x.multiply(x);                    // If y is even
                 y = y.shiftRight(1);
             }
             else
             {
-                result = result.multiply(x);
+                result = result.multiply(x);          // If y is odd
                 y = y.subtract(BigInteger.ONE);
             }
         }
@@ -98,14 +116,13 @@ public class Utils {
      * @param x
      * @param y
      * @param p
-     * @return (x^y)%p
+     * @return (x power y) module p
      */
     public static BigInteger powerMod(BigInteger x, BigInteger y, BigInteger p)
     {
-        BigInteger res = BigInteger.ONE; // Initialize result
+        BigInteger res = BigInteger.ONE;
 
-        x = x.mod(p); // Update x if it is more than or
-        // equal to p
+        x = x.mod(p); // Update x if it is more than or equal to p
 
         if (x.compareTo(BigInteger.ZERO) == 0)
             return BigInteger.ZERO; // In case x is divisible by p;
@@ -123,6 +140,12 @@ public class Utils {
         return res;
     }
     
+    /**
+     *
+     * @param a
+     * @param b
+     * @return GCD(a, b)
+     */
     public static BigInteger gcd(BigInteger a, BigInteger b)
     {
         while (b.compareTo(BigInteger.ZERO) != 0)
@@ -168,8 +191,8 @@ public class Utils {
 
     
     /**
-     * Random a n-bit-length-number
-     * @param n : Size
+     * Random a odd integer with n-bit-length
+     * @param Size
      * @return BigInteger
      */
     public static BigInteger randomGeneration(int n)
@@ -196,6 +219,11 @@ public class Utils {
         return new BigInteger(bytes);
     }
 
+    /**
+     * Generate a probably prime number with n-bit-length
+     * @param Size
+     * @return BigInteger
+     */
     public static BigInteger getLowLevelPrime(int n)
     {
         BigInteger pc;
@@ -216,6 +244,10 @@ public class Utils {
         }
     }
 
+    /**
+     * Function to check if a number mrc is composite
+     * Helper for {@link Utils#isMillerRabinPassed(BigInteger, int)}
+     */
     public static boolean trialComposite(BigInteger rt, BigInteger ec, BigInteger mrc, BigInteger max)
     {
         BigInteger One = BigInteger.ONE;
@@ -229,6 +261,12 @@ public class Utils {
         return true;
     }
 
+    /**
+     * Check if a probably prime number is a prime number
+     * @param number
+     * @param Size (bit-length)
+     * @return BigInteger
+     */
     public static boolean isMillerRabinPassed(BigInteger mrc, int size)
     {
         BigInteger maxDivisionsByTwo = BigInteger.ZERO;
@@ -253,7 +291,8 @@ public class Utils {
 
     /**
      * Random a n-bit-length-prime-number
-     * Method: random number then check with Fermat's little theory
+     * Method: random probably prime number then check with Miller Rabin method
+     * 
      * @param n : Size
      * @return BigInteger
      */
@@ -269,45 +308,14 @@ public class Utils {
         }
     }
 
-    // /**
-    //  * Random a n-bit-length-prime-number
-    //  * Method: random number then check with Fermat's little theory
-    //  * @param n : Size
-    //  * @return BigInteger
-    //  */
-    // public static BigInteger primeGeneration(int n)
-    // {
-    //     BigInteger TWO = new BigInteger("2");
-    //     BigInteger THREE = new BigInteger("3");
-        
-    //     BigInteger tempPrime;
-    //     BigInteger tempRemainder;
-    //     tempPrime = randomGeneration(n);
-    //     int i = 0;
-    //     while (true)
-    //     {
-    //         tempRemainder = powerMod(TWO, tempPrime, tempPrime);
-    //         if (tempRemainder.compareTo(tempPrime) == 0)
-    //         {
-    //             tempRemainder = powerMod(THREE, tempPrime, tempPrime);
-    //             if (tempRemainder.compareTo(tempPrime) == 0)
-    //                 break;
-    //         }
-    //         tempPrime = randomGeneration(n);
-    //         System.out.println(i++);
-    //     }
-    //     return tempPrime;
-    // }
-
     /**
-     * Generate e
+     * Generate e 
      * @param phi
      * @return e
      */
     public static BigInteger eGeneration(BigInteger phi)
     {
         BigInteger temp = new BigInteger("3");
-        BigInteger TWO = new BigInteger("2");
 
         while (true)
         {
@@ -317,13 +325,14 @@ public class Utils {
             {
                 break;
             }
-            temp = temp.add(TWO);
+            temp = temp.add(new BigInteger("2"));
         }
         return temp;
     }
 
     /**
-     * Calculate d
+     * Calculate d by using {@link #gcdExtended(BigInteger, BigInteger)}
+     * 
      * @param e
      * @param phi
      * @return d
