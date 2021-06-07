@@ -1,0 +1,4 @@
+Euclidean algorithm: https://en.wikipedia.org/wiki/Euclidean_algorithm
+Generate Large Prime numbers: https://www.geeksforgeeks.org/how-to-generate-large-prime-numbers-for-rsa-algorithm/
+RSA Implement: https://github.com/rmpestano/RSA/tree/master/src/br/ufrgs/rmpestano/rsa
+Modular exponentiation: https://en.wikipedia.org/wiki/Modular_exponentiation

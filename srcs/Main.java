@@ -1,8 +1,9 @@
 package srcs;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class Main {
@@ -205,15 +206,100 @@ public class Main {
 
     public static void main(String[] args)
     {
-        // test();
-        // generateKey("key", 500);
-        String filePath = "file.txt";
-        List<BigInteger> publicKey = RSA.readFromFile("key.pub");
-        List<BigInteger> privateKey = RSA.readFromFile("key.pri");
-        sign_file(filePath, privateKey.get(0), privateKey.get(1));
-        verify_file(filePath, publicKey.get(0), publicKey.get(1));
-        enc_file(filePath, publicKey.get(0), publicKey.get(1));
-        dec_file(filePath, privateKey.get(0), privateKey.get(1));
-    }
+        Scanner sc= new Scanner(System.in);
+        while (true)
+        {
+            System.out.println();
+            System.out.println("0. Generate key: Generate private key and public key");
+            System.out.println("   then write key to {fileName}.pri and {fileName}.pub");
+            System.out.println("   Argument: fileName, keyLength");
+            System.out.println("   Ex: 0 key 512");
+            System.out.println();
+            System.out.println("1. Encrypt file: Encrypt {filePath} and write encrypted");
+            System.out.println("   file to {filePath}.enc");
+            System.out.println("   Argument: filePath, publicKeyFilePath");
+            System.out.println("   Ex: 1 file.txt key.pub");
+            System.out.println();
+            System.out.println("2. Decrypt file: Encrypt {filePath} and write decrypted");
+            System.out.println("   file to {filePath}.dec");
+            System.out.println("   Argument: filePath (without .enc), privateKeyFilePath");
+            System.out.println("   Ex: 2 file.txt key.pri");
+            System.out.println();
+            System.out.println("3. Sign file: Encrypt {filePath} and write signed");
+            System.out.println("   file to {filePath}.sig");
+            System.out.println("   Argument: filePath, keyFilePath");
+            System.out.println("   Ex: 3 file.txt key.pri");
+            System.out.println();
+            System.out.println("4. Verify file: Encrypt {filePath} and write verified");
+            System.out.println("   file to {filePath}.veri");
+            System.out.println("   Argument: filePath (without .sig), keyFilePath");
+            System.out.println("   Ex: 4 file.txt key.pub");
+            System.out.println();
+            System.out.println("5. Exit");
+            System.out.println();
+            System.out.print("Please choose option: ");
+            
+            String arg = sc.nextLine();
+            args = arg.split("\\s");
+            
+            int option;
+            try {
+                option = Integer.parseInt(args[0]);
+            }
+            catch (NumberFormatException e)
+            {
+                System.out.println("Invalid option!");
+                continue;
+            }
 
+            if (option == 5) break;
+            if ((option < 0) || (option > 4))
+            {
+                System.out.println("Invalid option!");
+                continue;
+            }
+            else if (args.length != 3)
+            {
+                System.out.println("Invalid option!");
+                continue;
+            }
+            List<BigInteger> publicKey, privateKey;
+            switch (option) {
+                case 0:
+                    int keySize;
+                    try {
+                        keySize = Integer.parseInt(args[2]);
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        System.out.println("Invalid option!");
+                        continue;
+                    }
+                    if (keySize < 1)
+                    {
+                        System.out.println("Invalid option!");
+                        continue;
+                    }
+                    generateKey(args[1], keySize);
+                    break;
+                case 1:
+                    publicKey = RSA.readFromFile(args[2]);
+                    enc_file(args[1], publicKey.get(0), publicKey.get(1));
+                    break;
+                case 2:
+                    privateKey = RSA.readFromFile(args[2]);
+                    dec_file(args[1], privateKey.get(0), privateKey.get(1));
+                    break;
+                case 3:
+                    privateKey = RSA.readFromFile(args[2]);
+                    sign_file(args[1], privateKey.get(0), privateKey.get(1));
+                    break;
+                case 4:
+                    publicKey = RSA.readFromFile(args[2]);
+                    verify_file(args[1], publicKey.get(0), publicKey.get(1));
+                    break;
+            }
+        }
+        sc.close();
+    }
 }
